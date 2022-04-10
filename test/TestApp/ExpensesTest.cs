@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using ChallengeApp;
-
+using System.Collections.Generic;
 
 namespace TestApp
 {
@@ -11,11 +11,13 @@ namespace TestApp
         public void Test1()
         {
             //arrange
-            var exp = new StandardExpense("kawa", 10.0, new DateTime(2022, 12, 22), "food");
-            var exp2 = new StandardExpense("Esteban", 2.2, new DateTime(2022, 5, 22), "gas");
+            var exp = new StandardExpense("kawa", 10.0, new DateTime(2022, 2, 22), "Food");
+            var exp2 = new StandardExpense("Esteban", 2.2, new DateTime(2022, 2, 22), "Bills");
             var explist = new ListofExpenses();
             explist.AddExpense(exp);
             explist.AddExpense(exp2);
+            var listOfBudgets = new List<Budget>();
+            // FillingBudgets(explist, listOfBudgets);
 
             //act
             var result = explist.getStats();

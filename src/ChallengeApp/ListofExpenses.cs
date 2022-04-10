@@ -6,7 +6,7 @@ namespace ChallengeApp
     public class ListofExpenses
     {
         public List<StandardExpense> expensesList = new List<StandardExpense>();
-        public int PositionID { get; private set; } = 0;
+        public int NumberOfProcessedExpenses { get; private set; } = 0;
         public void AddExpense(StandardExpense expense)
         {
             this.expensesList.Add(expense);
@@ -23,12 +23,12 @@ namespace ChallengeApp
             }
             else
             {
-                return expensesList.GetRange(PositionID, expensesList.Count - PositionID);
+                return expensesList.GetRange(NumberOfProcessedExpenses, expensesList.Count - NumberOfProcessedExpenses);
             }
         }
         public void IncreasesPositionID()
         {
-            PositionID++;
+            NumberOfProcessedExpenses++;
         }
 
         public Statistics getStats()
@@ -57,20 +57,49 @@ namespace ChallengeApp
         public void AddExpenseToListIO()
         {
             Console.WriteLine($"Insert expense name");
-            string name = Console.ReadLine();
+            string name = "Example Name"; //Console.ReadLine();
+
             Console.WriteLine($"Insert expense value");
-            string value = Console.ReadLine();
-            if (!double.TryParse(value, out double correctValue))
+            string value = "1111"; //Console.ReadLine();
+
+            double expValue = 0; //
+            bool successfullyParsed = false;
+            do
             {
-                throw new Exception($"incorrect value");
+                try
+                {
+                    successfullyParsed = double.TryParse(value, out double correctValue);
+                    if (correctValue > 0)
+                    {
+                        Console.WriteLine($"{correctValue}"); //
+                        expValue = correctValue; //
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"value got to be positive");
+                        continue;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine($"incorrect value");
+                }
             }
+            while (successfullyParsed == true);
+
+            Console.WriteLine($"{expValue}"); //
+
+
             Console.WriteLine($"Insert expense date in format YYYY-MM-DD");
             string date = Console.ReadLine();
             DateTime correctdate = DateTime.ParseExact(date, "yyyy-MM-dd", null);
-            Console.WriteLine($"Insert expense Category - choose form \"Food\",\"Bills\", \"Pleasures\"");
+
+            Console.WriteLine($"Insert expense Category - choose from \"Food\",\"Bills\", \"Pleasures\"");
             string category = Console.ReadLine();
             StandardExpense newexpense = new StandardExpense(name, correctValue, correctdate, category);
             expensesList.Add(newexpense);
+
 
             var lastIndexOflist = expensesList.Count - 1;                       //test
             Console.WriteLine(expensesList[lastIndexOflist].Name);              //test

@@ -5,9 +5,9 @@ namespace ChallengeApp
 {
     public class Budget //: IBudgetController
     {
-        private int foodBudget = 2000;
-        private int billsBudget = 1500;
-        private int pleasuresBudget = 1000;
+        public int foodBudget { get; } = 2000;
+        public int billsBudget { get; } = 1500;
+        public int pleasuresBudget { get; } = 1000;
         public int BudgetYear { get; }
         public int BudgetMonth { get; }
         public List<StandardExpense> expensesInBudgetFood { get; } = new List<StandardExpense>();
@@ -21,51 +21,6 @@ namespace ChallengeApp
         {
             this.BudgetMonth = month;
             this.BudgetYear = year;
-        }
-
-        public void AboutBudgetUsage(StandardExpense expense) // do eventu
-        {
-            Console.WriteLine($"{BudgetYear} {BudgetMonth}");
-
-            switch (expense.Category)
-            {
-                case "Food":
-                    if (FoodSum > foodBudget)
-                    {
-                        double o = (FoodSum - foodBudget) / foodBudget;
-                        Console.WriteLine($"You have exceeded your plannedc food budget by {o}");
-                    }
-                    else
-                    {
-                        double s = (FoodSum / foodBudget) * 100;
-                        Console.WriteLine($"You have spent {s}% of your food budget");
-                    }
-                    break;
-                case "Bills":
-                    if (BillsSum > billsBudget)
-                    {
-                        double o = (BillsSum - billsBudget) / billsBudget;
-                        Console.WriteLine($"You have exceeded your plannedc food budget by {o}");
-                    }
-                    else
-                    {
-                        double s = (BillsSum / billsBudget) * 100;
-                        Console.WriteLine($"You have spent {s}% of your food budget");
-                    }
-                    break;
-                case "Pleasures":
-                    if (PleasuresSum > pleasuresBudget)
-                    {
-                        double o = (PleasuresSum - pleasuresBudget) / pleasuresBudget;
-                        Console.WriteLine($"You have exceeded your plannedc food budget by {o}");
-                    }
-                    else
-                    {
-                        double s = (PleasuresSum / pleasuresBudget) * 100;
-                        Console.WriteLine($"You have spent {s}% of your food budget");
-                    }
-                    break;
-            }
         }
 
         public void AddExpenseToBudget(StandardExpense standardExpense)
@@ -86,6 +41,86 @@ namespace ChallengeApp
                     expensesInBudgetPleasures.Add(standardExpense);
                     PleasuresSum += standardExpense.Value;
                     break;
+            }
+        }
+
+        // Metoda wywoływana przez event - informacja o wykorzystaniu budżetu
+        public void AboutBudgetUsage(StandardExpense expense) // do eventu
+        {
+            Console.WriteLine($"Budget - year: {BudgetYear}, month: {BudgetMonth}");
+
+            switch (expense.Category)
+            {
+                case "Food":
+                    if (FoodSum > foodBudget)
+                    {
+                        double overspend = (FoodSum - foodBudget) / foodBudget;
+                        Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+                    }
+                    else
+                    {
+                        double budgetUsage = (FoodSum / foodBudget) * 100;
+                        Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
+                    }
+                    break;
+                case "Bills":
+                    if (BillsSum > billsBudget)
+                    {
+                        double overspend = (BillsSum - billsBudget) / billsBudget;
+                        Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+                    }
+                    else
+                    {
+                        double budgetUsage = (BillsSum / billsBudget) * 100;
+                        Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
+                    }
+                    break;
+                case "Pleasures":
+                    if (PleasuresSum > pleasuresBudget)
+                    {
+                        double overspend = (PleasuresSum - pleasuresBudget) / pleasuresBudget;
+                        Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+                    }
+                    else
+                    {
+                        double budgetUsage = (PleasuresSum / pleasuresBudget) * 100;
+                        Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
+                    }
+                    break;
+            }
+        }
+        public void AboutBudgetUsage()
+        {
+            Console.WriteLine($"Budget - year: {BudgetYear}, month: {BudgetMonth}");
+            if (FoodSum > foodBudget)
+            {
+                double overspend = (FoodSum - foodBudget) / foodBudget;
+                Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+            }
+            else
+            {
+                double budgetUsage = (FoodSum / foodBudget) * 100;
+                Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
+            }
+            if (BillsSum > billsBudget)
+            {
+                double overspend = (BillsSum - billsBudget) / billsBudget;
+                Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+            }
+            else
+            {
+                double budgetUsage = (BillsSum / billsBudget) * 100;
+                Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
+            }
+            if (PleasuresSum > pleasuresBudget)
+            {
+                double overspend = (PleasuresSum - pleasuresBudget) / pleasuresBudget;
+                Console.WriteLine($"You have exceeded your planned food budget by {overspend.ToString("N2")}%");
+            }
+            else
+            {
+                double budgetUsage = (PleasuresSum / pleasuresBudget) * 100;
+                Console.WriteLine($"You have spent {budgetUsage.ToString("N2")}% of your food budget");
             }
         }
     }

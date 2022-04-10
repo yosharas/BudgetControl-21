@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;   // dodać aby móc używać LIST
+using System.Collections.Generic;
 
 namespace ChallengeApp
 {
@@ -159,6 +159,9 @@ namespace ChallengeApp
             // 3. Adding my new expenses from console !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             listofExpenses.AddExpenseToListIO();   //zakomentować na testy
 
+            // ExpenseAddedToBudgetDelegate del = ;  // delegat
+            // ExpenseAddedToBudgetEvent += del;     // event
+
             // 3A.
             StandardExpense NewEXP = new StandardExpense("no139", 666, new DateTime(2022, 4, 6), "Pleasures");
             listofExpenses.expensesList.Add(NewEXP);
@@ -176,6 +179,8 @@ namespace ChallengeApp
             //4. Checking if new expenses need new budgets and creating needed new budget
             FillingBudgets(listofExpenses, listOfBudgets);
 
+
+
             //5. test utworzonych budzetów
             BudgetsSummary(listOfBudgets);
 
@@ -183,8 +188,8 @@ namespace ChallengeApp
             listofExpenses.getStats();
 
         }
-
-        static void BudgetsSummary(List<Budget> listOfBudgets)           
+        //Chciałbym to wywoływac eventem, ale nie wiem do czego ma się odwoływac event -do budżeu czy wydatku?
+        static void BudgetsSummary(List<Budget> listOfBudgets)
         {
             int i = 1;
             foreach (Budget b in listOfBudgets)
@@ -194,7 +199,7 @@ namespace ChallengeApp
             }
         }
 
-        private static void FillingBudgets(ListofExpenses listofExpenses, List<Budget> listOfBudgets)
+        public static void FillingBudgets(ListofExpenses listofExpenses, List<Budget> listOfBudgets)
         {
             foreach (StandardExpense e in listofExpenses.GetUnprocessedExpenses())
             {
@@ -208,20 +213,34 @@ namespace ChallengeApp
                     {
                         b.AddExpenseToBudget(e);
                         listofExpenses.IncreasesPositionID();
-                        // event robiący to co powyżej + np komunikat + podanie wykorzytsanie budżetu
+                        // if (ExpenseAddedToBudgetEvent != null)
+                        // {
+                            // ExpenseAddedToBudgetEvent(this);
+                        // }
                         createNewBudget = false;
                     }
                 }
+
                 if (createNewBudget)
                 {
                     Budget newBudget = new Budget(month, year);
                     newBudget.AddExpenseToBudget(e);
-                    //event event robiący to co powyżej + np komunikat
                     listOfBudgets.Add(newBudget);
+                    // if (ExpenseAddedToBudgetEvent != null)
+                    // {
+                        // ExpenseAddedToBudgetEvent(e);
+                    // }
+                    createNewBudget = false;
                     listofExpenses.IncreasesPositionID();
                 }
+
+
+
             }
+
         }
+        public delegate void ExpenseAddedToBudgetDelegate(object sender, EventArgs args);
+        static event ExpenseAddedToBudgetDelegate ExpenseAddedToBudgetEvent;
     }
 }
 
