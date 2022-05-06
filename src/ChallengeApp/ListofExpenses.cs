@@ -1,25 +1,26 @@
 using System;
-using System.Collections.Generic;   // dodać aby móc używać LIST
+using System.Collections.Generic;
+using System.IO;
 
 namespace ChallengeApp
 {
     public class ListofExpenses
     {
-        public List<StandardExpense> expensesList = new List<StandardExpense>();
+        public List<Expense> expensesList = new List<Expense>();
         public int NumberOfProcessedExpenses { get; private set; } = 0;
-        public void AddExpense(StandardExpense expense)
+        public void AddExpense(Expense expense)
         {
             this.expensesList.Add(expense);
         }
-        public void AddListofExpenses(List<StandardExpense> expenses)
+        public void AddListofExpenses(List<Expense> expenses)
         {
             this.expensesList.AddRange(expenses);
         }
-        public List<StandardExpense> GetUnprocessedExpenses()
+        public List<Expense> GetUnprocessedExpenses()
         {
             if (expensesList.Count == 0)
             {
-                return new List<StandardExpense>();
+                return new List<Expense>();
             }
             else
             {
@@ -30,80 +31,130 @@ namespace ChallengeApp
         {
             NumberOfProcessedExpenses++;
         }
-
-        public Statistics getStats()
+        public void AddExpenseToListInFileAndMemory()
         {
-            var result = new Statistics();
-
-            result.Avg = 0.0;
-            result.Sum = 0.0;
-            result.High = double.MinValue;
-            result.Low = double.MaxValue;
-
-            foreach (var expense in this.expensesList)
+            using (var writer = File.AppendText($"Baza.txt"))
             {
-                result.Low = Math.Min(result.Low, expense.Value);
-                result.High = Math.Max(result.High, expense.Value);
-                result.Sum += expense.Value;
+                string input;
+                do
+                {
+                    Console.WriteLine($"\nInsert expense name");
+                    string name = Console.ReadLine();
+
+                    Console.WriteLine($"\nInsert expense value");
+                    double expenseValue = InsertExpenseValue();
+
+                    Console.WriteLine($"\nInsert date of expense  in format YYYY-MM-DD");
+                    DateTime date = InsertExpenseDate();
+
+                    Console.WriteLine($"\nInsert expense Category - choose from \"food\",\"bills\", \"pleasures\"");
+                    string category = InsertExpenseCategory();
+
+                    Expense newexpense = new Expense(name, expenseValue, date, category);
+                    expensesList.Add(newexpense);
+
+                    writer.WriteLine($"{name};{expenseValue};{date.Year};{date.Month};{date.Day};{category}");
+
+                    Console.WriteLine($"\nYour expense \"{name}\" has been added to list (value:{expenseValue}, category: \"{category}\")");
+                    Console.WriteLine($"\nDo you want to add another expense <Y/N>");
+                    do
+                    {
+                        input = Console.ReadLine().ToUpper();
+                        if (input == "Y")
+                        {
+                            Console.WriteLine($"\nPlease insert another expense details\n");
+                        }
+                        else if (input == "N")
+                        {
+                            Console.WriteLine($"\nBelow you will be informed in detail with a summary of the budgets");
+                        }
+                        else { Console.WriteLine($"\nPlease insert correct value - Y or N"); }
+                    }
+                    while (!(input == "Y" || input == "N"));
+                }
+                while (input == "Y");
             }
-            result.Avg = result.Sum / this.expensesList.Count;
-
-            Console.WriteLine("Najniższa ocena to " + result.Low.ToString("N2"));
-            Console.WriteLine("Najwyższa ocena to " + result.High.ToString("N2"));
-            Console.WriteLine("Średnia ocen to " + result.Avg.ToString("N2"));
-
-            return result;
         }
-        public void AddExpenseToListIO()
+        private double InsertExpenseValue()
         {
-            Console.WriteLine($"Insert expense name");
-            string name = "Example Name"; //Console.ReadLine();
-
-            Console.WriteLine($"Insert expense value");
-            string value = "1111"; //Console.ReadLine();
-
-            double expValue = 0; //
-            bool successfullyParsed = false;
+            double expenseValue = -1;
             do
             {
                 try
                 {
-                    successfullyParsed = double.TryParse(value, out double correctValue);
-                    if (correctValue > 0)
+                    string value = Console.ReadLine();
+                    if (double.TryParse(value, out double correctValue))
                     {
-                        Console.WriteLine($"{correctValue}"); //
-                        expValue = correctValue; //
+                        expenseValue = correctValue;
+                        if (expenseValue <= 0)
+                        {
+                            Console.WriteLine("Please insert positive value");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please insert correct value");
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            while (expenseValue <= 0);
+            return expenseValue;
+        }
+        private DateTime InsertExpenseDate()
+        {
+            DateTime date = new DateTime(1, 1, 1);
+            do
+            {
+                try
+                {
+                    string dateAsDate = Console.ReadLine();
+                    if (DateTime.TryParse(dateAsDate, out DateTime correctDate) == true)
+                    {
+                        date = correctDate;
                         break;
                     }
                     else
                     {
-                        Console.WriteLine($"value got to be positive");
-                        continue;
+                        Console.WriteLine($"Please insert date in correct format");
                     }
                 }
-                catch
+                catch (FormatException ex)
                 {
-                    Console.WriteLine($"incorrect value");
+                    Console.WriteLine(ex.Message);
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
-            while (successfullyParsed == true);
-
-            Console.WriteLine($"{expValue}"); //
-
-
-            Console.WriteLine($"Insert expense date in format YYYY-MM-DD");
-            string date = Console.ReadLine();
-            DateTime correctdate = DateTime.ParseExact(date, "yyyy-MM-dd", null);
-
-            Console.WriteLine($"Insert expense Category - choose from \"Food\",\"Bills\", \"Pleasures\"");
-            string category = Console.ReadLine();
-            StandardExpense newexpense = new StandardExpense(name, correctValue, correctdate, category);
-            expensesList.Add(newexpense);
-
-
-            var lastIndexOflist = expensesList.Count - 1;                       //test
-            Console.WriteLine(expensesList[lastIndexOflist].Name);              //test
-
+            while (date.Year == 1);
+            return date;
+        }
+        private string InsertExpenseCategory()
+        {
+            string category;
+            do
+            {
+                category = Console.ReadLine().ToLower();
+                if (category == "food" || category == "bills" || category == "pleasures")
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine($"Insert correct category - choose from \"food\",\"bills\", \"pleasures\"");
+                }
+            }
+            while (true);
+            return category;
         }
     }
 }

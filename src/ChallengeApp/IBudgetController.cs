@@ -1,10 +1,11 @@
+using System;
+
 namespace ChallengeApp
 {
+    public delegate void BudgetExceededDelegate(object sender, EventArgs args);
+
     public interface IBudgetController
     {
-       bool IsSingleExpenseExceedingMonthlyBudget(StandardExpense expense);
-       bool IsMonthlyListOfExpensesExceedingMonthlyBudget(ListofExpenses expenses);
-       
+        event BudgetExceededDelegate BudgetIsNowExceeded;
     }
-    
 }
